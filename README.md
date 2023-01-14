@@ -12,10 +12,15 @@ Command line interface: https://github.com/francisy9/hs-cli
 
 ### How to Play
 Each player is given a fixed amount of mana each turn
+
 Use your mana to place your desired card onto the baord
+
 Use your units (your cards on the board) to attack opponent units/hero (Note: units usually need a turn to get ready!)
+
 When unit A is used to attack unit B, both units take damage equivalent to the other's attack
+
 When one of the heroes' health goes to 0, that player loses
+
 
 ### Program features
 The program was developed with the anchor lang framework.
