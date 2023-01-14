@@ -21,14 +21,16 @@ impl Game {
     pub const MAXIMUM_SIZE: usize = (32 * 2) + 1 + (14 * (1 + 4)) + (32 + 1) +
     2 + 2 + (10 * 4) + (10 * 4);
 
-    pub fn start(&mut self, players: [Pubkey; 2]) -> Result<()> {
+    pub fn start(&mut self, players: [Pubkey; 2], p1_hand: Vec<Card>, p2_hand: Vec<Card>) -> Result<()> {
         require_eq!(self.turn, 0, CardGameError::GameAlreadyStarted);
         self.players = players;
         self.turn = 1;
         self.health = [30, 30];
         self.mana = [1, 1];
-        self.p1_hand.push(Card{hp:2, atk:1, mana:1, moves:0});
-        self.p2_hand.push(Card{hp:1, atk:2, mana:1, moves:0});
+        self.p1_hand = p1_hand;
+        self.p2_hand = p2_hand;
+        // self.p1_hand.push(Card{hp:10, atk:10, mana:1, moves:0});
+        // self.p2_hand.push(Card{hp:15, atk:7, mana:1, moves:0});
         Ok(())
     }
 
@@ -67,6 +69,10 @@ impl Game {
                 None => {
                     let card;
                     if player == 0 {
+                        if self.p1_hand.len() <= card_index {
+                            return Err(CardGameError::CardIndexOutOfBounds.into())
+                        }
+
                         card = self.p1_hand[card_index];
                         if card.mana > self.mana[player] {
                             return Err(CardGameError::InsufficientMana.into())
@@ -76,6 +82,10 @@ impl Game {
                         self.mana[0] -= card.mana;
 
                     } else {
+                        if self.p2_hand.len() <= card_index {
+                            return Err(CardGameError::CardIndexOutOfBounds.into())
+                        }
+
                         card = self.p2_hand[card_index];
                         if card.mana > self.mana[player] {
                             return Err(CardGameError::InsufficientMana.into())
@@ -94,6 +104,7 @@ impl Game {
         }
 
         self.update_state();
+
 
         Ok(())
     }
@@ -124,7 +135,9 @@ impl Game {
         if self.p1_hand.is_empty() && self.p2_hand.is_empty() {
             self.state = GameState::Tie;
         }
+
     }
+
 
     // Finishes current player's turn and iterates turn 
     pub fn end_turn(& mut self) -> Result<()> {
@@ -178,12 +191,17 @@ impl Game {
                 if user_row == 1 {
                     if bot_unit.moves == 0 {
                         return Err(CardGameError::UnitIsNotReady.into())
+                    } else {
+                        bot_unit.moves = 0;
                     }
                 } else {
                     if top_unit.moves == 0 {
                         return Err(CardGameError::UnitIsNotReady.into())
+                    } else {
+                        top_unit.moves = 0;
                     }
                 }
+
                 bot_unit.hp -= top_unit.atk;
                 top_unit.hp -= bot_unit.atk;
 
@@ -208,9 +226,11 @@ impl Game {
                 return Err(CardGameError::CannotAttackOwnHero.into())
 
             } else {
-                if let Some(unit) = self.board[0][top_pos] {
+                if let Some(unit) = &mut self.board[0][top_pos] {
                     if unit.moves == 0 {
                         return Err(CardGameError::UnitIsNotReady.into())
+                    } else {
+                        unit.moves = 0;
                     }
                     self.health[0] -= unit.atk;
                 } else {
@@ -227,9 +247,11 @@ impl Game {
                 return Err(CardGameError::CannotAttackOwnHero.into())
 
             } else {
-                if let Some(unit) = self.board[1][bot_pos] {
+                if let Some(unit) = & mut self.board[1][bot_pos] {
                     if unit.moves == 0 {
                         return Err(CardGameError::UnitIsNotReady.into())
+                    } else {
+                        unit.moves = 0;
                     }
                     self.health[1] -= unit.atk;
                 } else {
@@ -257,11 +279,29 @@ impl Game {
             }
         }
     }
+
+    pub fn get_game_state(&self) -> GameState {
+        return self.state;
+    }
+
+
+    pub fn match_pubkeys(&self, input: [Pubkey; 2]) -> bool {
+        if self.players == input {
+            return true
+        }
+
+        if self.players[1] == input[0] && self.players[0] == input[1] {
+            return true
+        }
+
+        return false
+    }
+
 }
 
 
 
-#[derive(AnchorSerialize, AnchorDeserialize, Clone, PartialEq, Eq)]
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, PartialEq, Eq, Copy)]
 pub enum GameState {
     Active,
     Tie,

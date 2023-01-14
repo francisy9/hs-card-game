@@ -8,7 +8,7 @@ card = "ACYSdixSJLAewjEtKG17p4FsHVoEj1ptpB1UNv7vh4EJ"
 url = "https://api.apr.dev"
 
 [provider]
-cluster = "Devnet"
+cluster = "devnet"
 wallet = "/Users/francisyang/.config/solana/id.json"
 
 [scripts]

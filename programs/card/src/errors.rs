@@ -13,5 +13,16 @@ pub enum CardGameError {
     AllyBoardPositionEmpty,
     CannotAttackOwnHero,
     UnitIsNotReady,
-    InsufficientMana
+    InsufficientMana,
+    ScoreTooLow,
+    ScoreTooHigh,
+    UserAlreadyExists,
+    UserStatsAccountMissing,
+    OpposingStatsAccountMissing,
+    YouHaveAnActiveGame,
+    OpponentHasAnActiveGame,
+    NameTooLong,
+    GameStillActive,
+    MismatchPlayerKeys,
+    CardIndexOutOfBounds,
 }
