@@ -24,7 +24,7 @@ When one of the heroes' health goes to 0, that player loses
 
 ### Program features
 The program was developed with the anchor lang framework.
-1. User would connect their wallet to the program and initialize a user stats PDA account, that stores their score
+1. User would connect their wallet to the program and initialize a user stats PDA account (if it's their first time), that stores their score
   i. PDA account also records the player's active game, so they could reconnect to it if the game account public key wasn't stored properly
 2. User could then initiate a game account that challenges another player to a game
 3. As the game concludes, their scores on their respective user stats PDA accounts will be updated accordingly
